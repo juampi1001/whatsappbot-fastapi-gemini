@@ -15,12 +15,11 @@ async def handle_post_request(request: Request):
     print("POST request data recibido :", data)
     return {"status": "success", "message": "POST request recibido"}
 
-@app.get("/")
+@app.get("/webhook")
 def verify(request: Request):
     mode = request.query_params.get('hub.mode')
     challenge = request.query_params.get('hub.challenge')
     token = request.query_params.get('hub.verify_token')
-
     if mode and token:
         if mode == 'subscribe' and token == sett.verify_token:
             print("WEBHOOK_VERIFIED")
@@ -29,7 +28,7 @@ def verify(request: Request):
             raise HTTPException(status_code=403, detail="Verification failed")
     return {"code": 200, 'message': 'test'}
 
-@app.post("/webhook")
+@app.post("/incoming-message")
 def receive_message(event: WhatsAppEvent):
     try:
         user_message = event.message['text']
